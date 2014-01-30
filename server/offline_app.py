@@ -15,18 +15,13 @@ app.debug = True
 
 @app.route('/search/')
 def search():
-    search = request.args.get('q')
-    search_data = requests.get(
-        'http://api.setlist.fm/rest/0.1/search/setlists.json?artistName=%s' % search,
-    )
-    search_results = json.loads(search_data.content)
     response_value = {
         'setlists': [
             {
                 'artist': {
-                    'name': setlist['artist']['@name'],
+                    'name': 'Mogwai',
                 }
-            } for setlist in search_results.setlists
+            },
         ]
     }
     response = jsonify(response_value)

@@ -29,8 +29,8 @@ require([
 
         $.get(action, data).done(function (data) {
             $searchResults.empty();
-            _.each(data.setlists.setlist, function (setlist) {
-                var artistName = setlist.artist['@name'],
+            _.each(data.setlists, function (setlist) {
+                var artistName = setlist.artist.name,
                     $searchResult = $('<li>' + artistName + '</li>'),
                     searchResults = search.Search.search(artistName);
 
