@@ -25,22 +25,10 @@ require([
 
         evt.preventDefault();
 
-        $.ajax(
-            action,
-            {
-                crossDomain: true,
-                data: data,
-                success: function (data) {
-                    console.log(data);
-                }
-            }
-        );
-        // .done(function (data) {
-        //     debugger;
-
-        //     _.each(data.setlists.setlist, function (setlist) {
-        //         $searchResults.append($('<li>' + setlist.artist['@name'] + '</li>'));
-        //     });
-        // });
+        $.get(action, data).done(function (data) {
+            _.each(data.setlists.setlist, function (setlist) {
+                $searchResults.append($('<li>' + setlist.artist['@name'] + '</li>'));
+            });
+        });
     });
 });
