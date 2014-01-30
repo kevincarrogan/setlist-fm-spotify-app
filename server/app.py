@@ -25,8 +25,13 @@ def search():
             {
                 'artist': {
                     'name': setlist['artist']['@name'],
-                }
-            } for setlist in search_results.setlists
+                },
+                'venue': {
+                    'name': setlist['venue']['@name'],
+                    'city': setlist['venue']['city']['@name'],
+                },
+                'date': '-'.join(reversed(setlist['@eventDate'].split('-'))),
+            } for setlist in search_results['setlists']['setlist']
         ]
     }
     response = jsonify(response_value)

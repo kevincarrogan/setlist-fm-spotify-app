@@ -7,7 +7,8 @@ require([
 ], function (models, search, Image, jquery, underscore) {
     'use strict';
 
-    var _ = underscore._,
+    var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        _ = underscore._,
         $searchForm = $('#search-form'),
         action = $searchForm.prop('action'),
         $searchResults = $('#search-results'),
@@ -20,7 +21,20 @@ require([
             });
 
             return data;
-        };
+        },
+        searchResultTemplate = _.template(
+            '<li>' +
+                '<div class="artist-name"><%= artistName %></div>' +
+                '<div class="venue">' +
+                    '<div class="name"><%= venueName %></div>' +
+                    '<div class="city"><%= venueCity %></div>' +
+                '</div>' +
+                '<div class="date">' +
+                    '<div class="month"><%= month %></div>' +
+                    '<div class="day"><%= day %></div>' +
+                '</div>' +
+                '<div class="image" />' +
+            '</li>');
 
     $searchForm.on('submit', function (evt) {
         var data = serializeObject($(this));
@@ -30,15 +44,22 @@ require([
         $.get(action, data).done(function (data) {
             $searchResults.empty();
             _.each(data.setlists, function (setlist) {
-                var artistName = setlist.artist.name,
-                    $searchResult = $('<li>' + artistName + '</li>'),
-                    searchResults = search.Search.search(artistName);
+                var date = new Date(setlist.date),
+                    context = {
+                        artistName: setlist.artist.name,
+                        venueName: setlist.venue.name,
+                        venueCity: setlist.venue.city,
+                        day: date.getDate(),
+                        month: months[date.getMonth()]
+                    },
+                    $searchResult = $(searchResultTemplate(context)),
+                    searchResults = search.Search.search(setlist.artist.name);
 
                 searchResults.artists.snapshot(0, 1).done(function (snapshot) {
                     var artist = snapshot.get(0),
                         image = Image.forArtist(artist, {width: 100, height: 100});
 
-                    $searchResult.append($(image.node));
+                    $searchResult.find('.image').append($(image.node));
                 });
 
                 $searchResults.append($searchResult);
