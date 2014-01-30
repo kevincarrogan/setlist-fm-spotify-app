@@ -1,8 +1,10 @@
 require([
     '$api/models',
+    '$api/search',
+    '$views/image#Image',
     'scripts/jquery',
     'scripts/underscore'
-], function (models, jquery, underscore) {
+], function (models, search, Image, jquery, underscore) {
     'use strict';
 
     var _ = underscore._,
@@ -26,8 +28,20 @@ require([
         evt.preventDefault();
 
         $.get(action, data).done(function (data) {
+            $searchResults.empty();
             _.each(data.setlists.setlist, function (setlist) {
-                $searchResults.append($('<li>' + setlist.artist['@name'] + '</li>'));
+                var artistName = setlist.artist['@name'],
+                    $searchResult = $('<li>' + artistName + '</li>'),
+                    searchResults = search.Search.search(artistName);
+
+                searchResults.artists.snapshot(0, 1).done(function (snapshot) {
+                    var artist = snapshot.get(0),
+                        image = Image.forArtist(artist, {width: 100, height: 100});
+
+                    $searchResult.append($(image.node));
+                });
+
+                $searchResults.append($searchResult);
             });
         });
     });
