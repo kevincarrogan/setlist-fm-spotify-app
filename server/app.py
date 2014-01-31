@@ -31,6 +31,9 @@ def search():
                     'city': setlist['venue']['city']['@name'],
                 },
                 'date': '-'.join(reversed(setlist['@eventDate'].split('-'))),
+                'tracks': [
+                    track['@name'] for track in search_results['setlists']['setlist'][0]['sets']['set']['song']
+                ],
             } for setlist in search_results['setlists']['setlist']
         ]
     }

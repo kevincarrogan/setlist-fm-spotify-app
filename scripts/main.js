@@ -34,7 +34,13 @@ require([
                     '<div class="day"><%= day %></div>' +
                 '</div>' +
                 '<div class="image" />' +
-            '</li>');
+                '<ul class="setlist" />' +
+            '</li>'),
+        setlistItemTemplate = _.template(
+            '<li>' +
+                '<%= name %>' +
+            '</li>'
+        );
 
     $searchForm.on('submit', function (evt) {
         var data = serializeObject($(this));
@@ -53,7 +59,8 @@ require([
                         month: months[date.getMonth()]
                     },
                     $searchResult = $(searchResultTemplate(context)),
-                    searchResults = search.Search.search(setlist.artist.name);
+                    searchResults = search.Search.search(setlist.artist.name),
+                    $setList = $searchResult.find('.setlist');
 
                 searchResults.artists.snapshot(0, 1).done(function (snapshot) {
                     var artist = snapshot.get(0),
@@ -63,6 +70,10 @@ require([
                 });
 
                 $searchResults.append($searchResult);
+
+                _.each(setlist.tracks, function (name) {
+                    $setList.append($(setlistItemTemplate({name: name})));
+                });
             });
         });
     });
