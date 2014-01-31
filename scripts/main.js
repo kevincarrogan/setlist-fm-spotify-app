@@ -2,9 +2,10 @@ require([
     '$api/models',
     '$api/search',
     '$views/image#Image',
+    '$views/throbber#Throbber',
     'scripts/jquery',
     'scripts/underscore'
-], function (models, search, Image, jquery, underscore) {
+], function (models, search, Image, Throbber, jquery, underscore) {
     'use strict';
 
     var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -43,11 +44,13 @@ require([
         );
 
     $searchForm.on('submit', function (evt) {
-        var data = serializeObject($(this));
+        var data = serializeObject($(this)),
+            throbber = Throbber.forElement($searchResults.get(0));
 
         evt.preventDefault();
 
         $.get(action, data).done(function (data) {
+            throbber.hide();
             $searchResults.empty();
             _.each(data.setlists, function (setlist) {
                 var date = new Date(setlist.date),
