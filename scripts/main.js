@@ -4,25 +4,17 @@ require([
     '$views/image#Image',
     '$views/throbber#Throbber',
     'scripts/jquery',
-    'scripts/underscore'
-], function (models, search, Image, Throbber, jquery, underscore) {
+    'scripts/underscore',
+    'scripts/serializeobject'
+], function (models, search, Image, Throbber, jquery, underscore, serializeObject) {
     'use strict';
 
     var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        serializeObject = serializeObject.serializeObject,
         _ = underscore._,
         $searchForm = $('#search-form'),
         action = $searchForm.prop('action'),
         $searchResults = $('#search-results'),
-        serializeObject = function ($el) {
-            var arr = $el.serializeArray(),
-                data = {};
-
-            _.each(arr, function (kv) {
-                data[kv.name] = kv.value;
-            });
-
-            return data;
-        },
         searchResultTemplate = _.template(
             '<li>' +
                 '<div class="artist-name"><%= artistName %></div>' +
