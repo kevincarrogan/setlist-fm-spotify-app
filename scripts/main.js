@@ -5,8 +5,9 @@ require([
     '$views/throbber#Throbber',
     'scripts/jquery',
     'scripts/underscore',
-    'scripts/serializeobject'
-], function (models, search, Image, Throbber, jquery, underscore, serializeObject) {
+    'scripts/serializeobject',
+    'scripts/templates'
+], function (models, search, Image, Throbber, jquery, underscore, serializeObject, templates) {
     'use strict';
 
     var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -14,26 +15,7 @@ require([
         _ = underscore._,
         $searchForm = $('#search-form'),
         action = $searchForm.prop('action'),
-        $searchResults = $('#search-results'),
-        searchResultTemplate = _.template(
-            '<li>' +
-                '<div class="artist-name"><%= artistName %></div>' +
-                '<div class="venue">' +
-                    '<div class="name"><%= venueName %></div>' +
-                    '<div class="city"><%= venueCity %></div>' +
-                '</div>' +
-                '<div class="date">' +
-                    '<div class="month"><%= month %></div>' +
-                    '<div class="day"><%= day %></div>' +
-                '</div>' +
-                '<div class="image" />' +
-                '<ul class="setlist" />' +
-            '</li>'),
-        setlistItemTemplate = _.template(
-            '<li>' +
-                '<%= name %>' +
-            '</li>'
-        );
+        $searchResults = $('#search-results');
 
     $searchForm.on('submit', function (evt) {
         var data = serializeObject($(this)),
@@ -53,7 +35,7 @@ require([
                         day: date.getDate(),
                         month: months[date.getMonth()]
                     },
-                    $searchResult = $(searchResultTemplate(context)),
+                    $searchResult = $(templates.searchResultTemplate(context)),
                     searchResults = search.Search.search(setlist.artist.name),
                     $setList = $searchResult.find('.setlist');
 
@@ -67,7 +49,7 @@ require([
                 $searchResults.append($searchResult);
 
                 _.each(setlist.tracks, function (name) {
-                    $setList.append($(setlistItemTemplate({name: name})));
+                    $setList.append($(templates.setlistItemTemplate({name: name})));
                 });
             });
         });
