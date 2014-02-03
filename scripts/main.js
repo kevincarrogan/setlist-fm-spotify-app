@@ -6,12 +6,22 @@ require([
     'scripts/jquery',
     'scripts/underscore',
     'scripts/serializeobject',
-    'scripts/templates'
-], function (models, search, Image, Throbber, jquery, underscore, serializeObject, templates) {
+    'scripts/templates',
+    'scripts/dateutils'
+], function (
+    models,
+    search,
+    Image,
+    Throbber,
+    jquery,
+    underscore,
+    serializeObject,
+    templates,
+    dateutils
+) {
     'use strict';
 
-    var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-        serializeObject = serializeObject.serializeObject,
+    var serializeObject = serializeObject.serializeObject,
         _ = underscore._,
         $searchForm = $('#search-form'),
         action = $searchForm.prop('action'),
@@ -33,7 +43,7 @@ require([
                         venueName: setlist.venue.name,
                         venueCity: setlist.venue.city,
                         day: date.getDate(),
-                        month: months[date.getMonth()]
+                        month: dateutils.getShortMonthName(date.getMonth())
                     },
                     $searchResult = $(templates.searchResultTemplate(context)),
                     searchResults = search.Search.search(setlist.artist.name),
