@@ -12,31 +12,76 @@ from flask import Flask, abort, jsonify, request
 app = Flask(__name__)
 app.debug = True
 
+SETLIST_SEARCH_URL = 'http://api.setlist.fm/rest/0.1/search/setlists.json'
+ARTIST_SEARCH_URL = SETLIST_SEARCH_URL + '?artistName=%s'
+
+
+def get_results(query):
+    search_data = requests.get(ARTIST_SEARCH_URL % query)
+    return json.loads(search_data.content)
+
+
+def get_artist_name(setlist):
+    return setlist['artist']['@name']
+
+
+def get_venue(setlist):
+    return setlist['venue']
+
+
+def get_venue_name(setlist):
+    return get_venue(setlist)['@name']
+
+
+def get_city_name(setlist):
+    return get_venue(setlist)['city']['@name']
+
+
+def get_date(setlist):
+    return '-'.join(reversed(setlist['@eventDate'].split('-')))
+
+
+def get_tracks(setlist):
+    sets = setlist['sets']
+    tracks = []
+    if sets:
+        if isinstance(sets['set'], dict):
+            songs = sets['set']
+        elif isinstance(sets['set'], list):
+            songs = sets['set'][0]
+
+        tracks = songs['song']
+
+        tracks = [track['@name'] for track in tracks]
+
+    return tracks
+
+
+def get_setlist(setlist):
+    return {
+        'artist': {
+            'name': get_artist_name(setlist),
+        },
+        'venue': {
+            'name': get_venue_name(setlist),
+            'city': get_city_name(setlist),
+        },
+        'date': get_date(setlist),
+        'tracks': get_tracks(setlist),
+    }
+
 
 @app.route('/search/')
 def search():
-    search = request.args.get('q')
-    search_data = requests.get(
-        'http://api.setlist.fm/rest/0.1/search/setlists.json?artistName=%s' % search,
-    )
-    search_results = json.loads(search_data.content)
+    query = request.args.get('q')
+    search_results = get_results(query)
+
+    setlists = search_results['setlists']['setlist']
+
     response_value = {
-        'setlists': [
-            {
-                'artist': {
-                    'name': setlist['artist']['@name'],
-                },
-                'venue': {
-                    'name': setlist['venue']['@name'],
-                    'city': setlist['venue']['city']['@name'],
-                },
-                'date': '-'.join(reversed(setlist['@eventDate'].split('-'))),
-                'tracks': [
-                    track['@name'] for track in search_results['setlists']['setlist'][0]['sets']['set']['song']
-                ],
-            } for setlist in search_results['setlists']['setlist']
-        ]
+        'setlists': [get_setlist(setlist) for setlist in setlists],
     }
+
     response = jsonify(response_value)
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
