@@ -3,6 +3,7 @@ require([
     '$api/search',
     '$views/image#Image',
     '$views/throbber#Throbber',
+    '$views/list#List',
     'scripts/jquery',
     'scripts/underscore#_',
     'scripts/serializeobject#serializeObject',
@@ -13,6 +14,7 @@ require([
     search,
     Image,
     Throbber,
+    List,
     jquery,
     _,
     serializeObject,
@@ -64,20 +66,32 @@ require([
                         trackSearchResults = search.Search.search(artistName + ' ' + name);
 
                     trackSearchPromises.push(trackSearchResults.tracks.snapshot(0, 1));
-
-                    $setList.append($(templates.setlistItemTemplate({name: name})));
                 });
 
                 wait = models.Promise.join.apply(models.Promise, trackSearchPromises);
 
                 wait.done(function (results) {
                     var uris = [],
+                        trackPlaylistPromise,
                         tracks;
                     if (results.length) {
                         _.each(results, function (result) {
-                            uris.push(result.get(0).uri);
+                            if (result.get(0)) {
+                                uris.push(result.get(0).uri);
+                            }
                         });
                         tracks = models.Track.fromURIs(uris);
+                        trackPlaylistPromise = models.Playlist.createTemporary(setlist.artist.name + ' - ' + setlist.venue.name);
+                        trackPlaylistPromise.done(function (playlist) {
+                            playlist.load('tracks').done(function (playlist) {
+                                var promise = playlist.tracks.add(tracks);
+                                promise.done(function () {
+                                    var list = List.forPlaylist(playlist);
+                                    $setList.append(list.node);
+                                    list.init();
+                                });
+                            });
+                        });
                     }
                 });
             });
