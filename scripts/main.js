@@ -4,6 +4,7 @@ require([
     '$views/image#Image',
     '$views/throbber#Throbber',
     '$views/list#List',
+    '$views/buttons#PlayButton',
     'scripts/jquery',
     'scripts/underscore#_',
     'scripts/serializeobject#serializeObject',
@@ -15,6 +16,7 @@ require([
     Image,
     Throbber,
     List,
+    PlayButton,
     jquery,
     _,
     serializeObject,
@@ -48,6 +50,7 @@ require([
                     $searchResult = $(templates.searchResultTemplate(context)),
                     searchResults = search.Search.search(setlist.artist.name),
                     $setList = $searchResult.find('.setlist'),
+                    $actions = $searchResult.find('.actions'),
                     trackSearchPromises = [],
                     wait,
                     trackCollection;
@@ -86,9 +89,11 @@ require([
                             playlist.load('tracks').done(function (playlist) {
                                 var promise = playlist.tracks.add(tracks);
                                 promise.done(function () {
-                                    var list = List.forPlaylist(playlist);
+                                    var list = List.forPlaylist(playlist),
+                                        playButton = PlayButton.forItem(playlist);
                                     $setList.append(list.node);
                                     list.init();
+                                    $actions.append(playButton.node);
                                 });
                             });
                         });

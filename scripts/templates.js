@@ -14,6 +14,8 @@ require([
                     '<div class="day"><%= day %></div>' +
                 '</div>' +
                 '<div class="image" />' +
+                '<div class="actions">' +
+                '</div>' +
                 '<ul class="setlist" />' +
             '</li>'),
         setlistItemTemplate = _.template(
