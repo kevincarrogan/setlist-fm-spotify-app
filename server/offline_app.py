@@ -20,9 +20,18 @@ def search():
             {
                 'artist': {
                     'name': 'Mogwai',
-                }
+                },
+                'venue': {
+                    'name': 'Royal Festival Hall',
+                    'city': 'London'
+                },
+                'date': '2014-12-12',
+                'tracks': [
+                    'Deesh',
+                    'Friend Of The Night',
+                ],
             },
-        ]
+        ],
     }
     response = jsonify(response_value)
     response.headers.add('Access-Control-Allow-Origin', '*')
