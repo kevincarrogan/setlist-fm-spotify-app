@@ -4,8 +4,8 @@ require([
     '$views/image#Image',
     '$views/throbber#Throbber',
     'scripts/jquery',
-    'scripts/underscore',
-    'scripts/serializeobject',
+    'scripts/underscore#_',
+    'scripts/serializeobject#serializeObject',
     'scripts/templates',
     'scripts/dateutils'
 ], function (
@@ -14,16 +14,14 @@ require([
     Image,
     Throbber,
     jquery,
-    underscore,
+    _,
     serializeObject,
     templates,
     dateutils
 ) {
     'use strict';
 
-    var serializeObject = serializeObject.serializeObject,
-        _ = underscore._,
-        $searchForm = $('#search-form'),
+    var $searchForm = $('#search-form'),
         action = $searchForm.prop('action'),
         $searchResults = $('#search-results');
 
