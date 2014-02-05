@@ -45,14 +45,11 @@ def get_tracks(setlist):
     sets = setlist['sets']
     tracks = []
     if sets:
-        if isinstance(sets['set'], dict):
-            songs = sets['set']
-        elif isinstance(sets['set'], list):
-            songs = sets['set'][0]
+        songs = sets['set']
+        if isinstance(songs, list):
+            songs = songs[0]
 
-        tracks = songs['song']
-
-        tracks = [track['@name'] for track in tracks]
+        tracks = [track['@name'] for track in songs['song']]
 
     return tracks
 
