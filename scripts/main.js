@@ -47,7 +47,10 @@ require([
                     },
                     $searchResult = $(templates.searchResultTemplate(context)),
                     searchResults = search.Search.search(setlist.artist.name),
-                    $setList = $searchResult.find('.setlist');
+                    $setList = $searchResult.find('.setlist'),
+                    trackSearchPromises = [],
+                    wait,
+                    trackCollection;
 
                 searchResults.artists.snapshot(0, 1).done(function (snapshot) {
                     var artist = snapshot.get(0),
@@ -59,7 +62,25 @@ require([
                 $searchResults.append($searchResult);
 
                 _.each(setlist.tracks, function (name) {
+                    var artistName = setlist.artist.name,
+                        trackSearchResults = search.Search.search(artistName + ' ' + name);
+
+                    trackSearchPromises.push(trackSearchResults.tracks.snapshot(0, 1));
+
                     $setList.append($(templates.setlistItemTemplate({name: name})));
+                });
+
+                wait = models.Promise.join.apply(models.Promise, trackSearchPromises);
+
+                wait.done(function (results) {
+                    var uris = [],
+                        tracks;
+                    if (results.length) {
+                        _.each(results, function (result) {
+                            uris.push(result.get(0).uri);
+                        });
+                        tracks = models.Track.fromURIs(uris);
+                    }
                 });
             });
         });
