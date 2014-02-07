@@ -3,8 +3,8 @@ require([
 ], function (underscore) {
     var _ = underscore._,
         searchResultTemplate = _.template(
-            '<li>' +
-                '<div class="artist-name"><%= artistName %></div>' +
+            '<article>' +
+                '<h1 class="artist-name"><%= artistName %></h1>' +
                 '<div class="venue">' +
                     '<div class="name"><%= venueName %></div>' +
                     '<div class="city"><%= venueCity %></div>' +
@@ -17,7 +17,7 @@ require([
                 '<div class="actions">' +
                 '</div>' +
                 '<ul class="setlist" />' +
-            '</li>'),
+            '</article>'),
         setlistItemTemplate = _.template(
             '<li>' +
                 '<%= name %>' +
